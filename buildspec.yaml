@@ -1,0 +1,34 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.9
+    commands:
+      - echo "Installing dependencies"
+      - pip install --upgrade pip
+      - pip install -r requirements.txt
+      - pip install flake8 nose junit-xml
+
+  pre_build:
+    commands:
+      - echo "Running Flake8"
+      - flake8 . --max-line-length=120
+
+  build:
+    commands:
+      - echo "Running tests with nose"
+      - mkdir -p test-reports
+      - nosetests --with-xunit --xunit-file=test-reports/nosetests.xml
+
+artifacts:
+  files:
+    - test-reports/nosetests.xml
+  discard-paths: yes
+
+reports:
+  junit-tests:
+    files:
+      - nosetests.xml
+    base-directory: test-reports
+    file-format: JunitXml
